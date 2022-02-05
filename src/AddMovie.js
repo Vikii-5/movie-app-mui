@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { Button, TextField, Snackbar } from "@mui/material";
 
-export function AddMovie({ movieDetails, setMoviedetails }) {
-  
+export function AddMovie() {
+
+  const history = useHistory();
+  const [movieDetails, setMoviedetails] = useState([]);
+
   const [poster, setPoster] = useState("");
   const [name, setName] = useState("");
   const [rating, setRating] = useState("");
   const [year, setYear] = useState("");
   const [storyline, setStoryline] = useState("");
+  const [trailer, setTrailer] = useState("");
   const [open, setOpen] = useState(false);
+
+  const newMovie = { poster, name, rating, year, storyline, trailer };
+
+  const addMovie = () => {
+    fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(newMovie)
+    })
+    .then(() => console.log(newMovie))
+  }
 
   return (
     <section className="add-movie">
@@ -22,6 +38,16 @@ export function AddMovie({ movieDetails, setMoviedetails }) {
             type="url"
             value={poster}
             onChange={(event) => setPoster(event.target.value)}
+          />
+
+          <TextField
+            id="outlined-basic"
+            label="Paste Movie Trailer Link"
+            variant="outlined"
+            size="small"
+            type="url"
+            value={trailer}
+            onChange={(event) => setTrailer(event.target.value)}
           />
 
           <TextField
@@ -51,7 +77,7 @@ export function AddMovie({ movieDetails, setMoviedetails }) {
             label="Enter a Movie Year"
             variant="outlined"
             size="small"
-            type="text"
+            type="number"
             value={year}
             onChange={(event) => setYear(event.target.value)}
             min="1950"
@@ -72,13 +98,15 @@ export function AddMovie({ movieDetails, setMoviedetails }) {
           <div className="add-button">
             <Button
               variant="outlined"
-              onClick={() => {
-                setMoviedetails([
-                  ...movieDetails,
-                  { poster, name, rating, year, storyline },
-                ]);
-                setOpen(true);
-              }}
+              onClick={() => {addMovie(); setOpen(true); history.push("/movies")}}
+              // {() => {
+              //   setMoviedetails([
+              //     ...movieDetails,
+              //     { poster, name, rating, year, storyline },
+              //   ]);
+              //   setOpen(true);
+              //   history.push("/movies");
+              // }}
             >
               Add Movie
             </Button>
