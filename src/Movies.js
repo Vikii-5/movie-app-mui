@@ -7,6 +7,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import EditIcon from "@mui/icons-material/Edit";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
 
 export function Movies({ poster, name, rating, year, storyline, id, deleteButton }) {
 
@@ -21,10 +24,12 @@ export function Movies({ poster, name, rating, year, storyline, id, deleteButton
   const history = useHistory();
 
   return (
+    <Card sx={{ borderRadius: "10px", boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.2)"}} variant="outlined">
     <div className="movie-card">
       <img src={poster} alt={name} />
       <h4 className="title">{name}</h4>
 
+      <CardContent>
       <div className="movie-card-specs">
         <p>
           <Tooltip title={rating} arrow>
@@ -56,14 +61,17 @@ export function Movies({ poster, name, rating, year, storyline, id, deleteButton
             aria-label="Movie Details"
             onClick={() => history.push("/movie-info/" + id)}
           >
-            <InfoIcon fontSize="small" color="secondary" />
+            <InfoIcon fontSize="small" />
           </IconButton>
         </div>
         <p style={styles} className="summary">
           {storyline}
         </p>
+        </div>
+        </CardContent>
 
-        <div className="movie-card-buttons">
+        <CardActions sx={{borderTop: "1px solid", borderColor: "divider"}}>
+        
           <div className="like-button">
             <IconButton
               aria-label="Like Button"
@@ -88,6 +96,7 @@ export function Movies({ poster, name, rating, year, storyline, id, deleteButton
 
           <div className="edit-button">
             <IconButton
+              sx={{marginLeft:"auto"}}
               aria-label="Edit Button"
               onClick={() => history.push("/edit-movies/" + id)}
             >
@@ -95,8 +104,10 @@ export function Movies({ poster, name, rating, year, storyline, id, deleteButton
             </IconButton>
             {deleteButton}
           </div>
-        </div>
-      </div>
+        
+        </CardActions>
+
     </div>
+    </Card>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Button } from "@mui/material";
 import { TextField, Snackbar } from "@mui/material";
 
@@ -9,11 +9,14 @@ export function EditMovies({ movieDetails, setMoviedetails }) {
   const { id } = useParams();
   const movies = movieDetails[id];
 
+  const history = useHistory();
+
   const [poster, setPoster] = useState(movies.poster);
   const [name, setName] = useState(movies.name);
   const [rating, setRating] = useState(movies.rating);
   const [year, setYear] = useState(movies.year);
   const [storyline, setStoryline] = useState(movies.storyline);
+  const [trailer, setTrailer] = useState(movies.trailer);
   
   //Snackbar initial state
   const [open, setOpen] = useState(false);
@@ -30,6 +33,16 @@ export function EditMovies({ movieDetails, setMoviedetails }) {
             type="url"
             defaultValue={poster}
             onChange={(event) => setPoster(event.target.value)}
+          />
+
+          <TextField
+            id="outlined-basic"
+            label="Paste Movie Trailer Link"
+            variant="outlined"
+            size="small"
+            type="url"
+            value={trailer}
+            onChange={(event) => setTrailer(event.target.value)}
           />
 
           <TextField
@@ -87,6 +100,7 @@ export function EditMovies({ movieDetails, setMoviedetails }) {
                 updatedMovieDetails[id] = updatedMovie;
                 setMoviedetails(updatedMovieDetails);
                 setOpen(true);
+                history.push("/movies");
               }}
             >
               Update Movie
