@@ -7,18 +7,18 @@ export function MovieDetails() {
 
   const [movieDetails, setMoviedetails] = useState([]);
 
-  const getMovie = () => {
+  const getMovies = () => {
     fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {method:"GET"})
     .then(data => data.json())
     .then(movie => setMoviedetails(movie))
   }
 
-  useEffect(getMovie, []);
+  useEffect(getMovies, []);
 
   const deleteMovie = (id) => {
     fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + id, {method:"DELETE"})
     .then(data => data.json())
-    .then(() => getMovie())
+    .then(() => getMovies())
   }
 
   return (

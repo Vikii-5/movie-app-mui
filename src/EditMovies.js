@@ -1,107 +1,151 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { Button } from "@mui/material";
 import { TextField, Snackbar } from "@mui/material";
+import { useFormik } from "formik";
+import { formValidationSchema } from "./AddMovie";
 
-export function EditMovies({ movieDetails, setMoviedetails }) {
-
+export function EditMovies() {
   //Getting the id details from the url using useParams hook
   const { id } = useParams();
-  const movies = movieDetails[id];
+  const [movie, setMovie] = useState(null);
 
+  const getMovie = () => {
+    fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + id, {
+      method: "GET",
+    })
+      .then((data) => data.json())
+      .then((mov) => setMovie(mov));
+  };
+
+  useEffect(getMovie, []);
+
+  return movie ? <EditMovieForm movie={movie} /> : "";
+}
+
+function EditMovieForm({ movie }) {
   const history = useHistory();
 
-  const [poster, setPoster] = useState(movies.poster);
-  const [name, setName] = useState(movies.name);
-  const [rating, setRating] = useState(movies.rating);
-  const [year, setYear] = useState(movies.year);
-  const [storyline, setStoryline] = useState(movies.storyline);
-  const [trailer, setTrailer] = useState(movies.trailer);
-  
+  const { handleSubmit, handleBlur, handleChange, values, errors, touched } =
+    useFormik({
+      initialValues: movie,
+      validationSchema: formValidationSchema,
+      onSubmit: (updatedMovie) => {
+        console.log("onSubmit", updatedMovie);
+        fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + movie.id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedMovie),
+        }).then(() => {
+          history.push("/movies");
+        });
+      },
+    });
+
   //Snackbar initial state
   const [open, setOpen] = useState(false);
 
   return (
     <section className="edit-movie">
       <div className="input-container">
-        <div className="movie-inputs">
+        <form onSubmit={handleSubmit} className="movie-inputs">
           <TextField
-            id="outlined-basic"
-            label="Paste Movie Poster Link"
+            id="poster"
+            name="poster"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.poster}
+            label="Paste Poster Link"
             variant="outlined"
-            size="small"
-            type="url"
-            defaultValue={poster}
-            onChange={(event) => setPoster(event.target.value)}
+            error={errors.poster && touched.poster}
+            helperText={errors.poster && touched.poster ? errors.poster : ""}
           />
 
           <TextField
-            id="outlined-basic"
-            label="Paste Movie Trailer Link"
+            id="trailer"
+            name="trailer"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.trailer}
+            label="Movie Trailer"
             variant="outlined"
-            size="small"
-            type="url"
-            value={trailer}
-            onChange={(event) => setTrailer(event.target.value)}
+            error={errors.trailer && touched.trailer}
+            helperText={errors.trailer && touched.trailer ? errors.trailer : ""}
+            poster
           />
 
           <TextField
-            id="outlined-basic"
-            label="Enter a Movie Name"
+            id="name"
+            name="name"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.name}
+            label="Movie Name"
             variant="outlined"
-            size="small"
-            type="text"
-            defaultValue={name}
-            onChange={(event) => setName(event.target.value)}
+            error={errors.name && touched.name}
+            helperText={errors.name && touched.name ? errors.name : ""}
           />
 
           <TextField
-            id="outlined-basic"
-            label="Enter a Movie Rating"
+            id="rating"
+            name="rating"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.rating}
+            label="Movie Rating"
             variant="outlined"
-            size="small"
-            type="number"
-            defaultValue={rating}
-            onChange={(event) => setRating(event.target.value)}
-            min="1"
-            max="10"
+            error={errors.rating && touched.rating}
+            helperText={errors.rating && touched.rating ? errors.rating : ""}
           />
 
           <TextField
-            id="outlined-basic"
-            label="Enter a Movie Year"
+            id="year"
+            name="year"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.year}
+            label="Movie Released Year"
             variant="outlined"
-            size="small"
-            type="text"
-            defaultValue={year}
-            onChange={(event) => setYear(event.target.value)}
-            min="1950"
-            max="2030"
+            error={errors.year && touched.year}
+            helperText={errors.year && touched.year ? errors.year : ""}
           />
 
           <TextField
-            id="outlined-basic"
-            label="Enter a Movie Storyline"
+            id="storyline"
+            name="storyline"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            value={values.storyline}
+            label="Movie storyline"
             variant="outlined"
-            size="small"
-            type="text"
-            defaultValue={storyline}
-            onChange={(event) => setStoryline(event.target.value)}
-            maxLength="150"
+            error={errors.storyline && touched.storyline}
+            helperText={
+              errors.storyline && touched.storyline ? errors.storyline : ""
+            }
           />
 
           <div className="add-button">
             <Button
               variant="outlined"
-              onClick={() => {
-                //Updating the movie details to the movieDetails array
-                const updatedMovie = { poster, name, rating, year, storyline };
-                const updatedMovieDetails = [...movieDetails];
-                updatedMovieDetails[id] = updatedMovie;
-                setMoviedetails(updatedMovieDetails);
-                setOpen(true);
-                history.push("/movies");
-              }}
+              type="submit"
+              // onClick={() => {
+              //   const updatedMovie = { poster, name, rating, year, storyline, trailer };
+              //   fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + movie.id, {
+              //   method: "PUT",
+              //   headers: {"Content-Type": "application/json"},
+              //   body: JSON.stringify(updatedMovie)
+              //   })
+              //   .then(() => {history.push("/movies")})
+              // }}
+              // {() => {
+              //   //Updating the movie details to the movieDetails array
+              //   const updatedMovie = { poster, name, rating, year, storyline };
+              //   const updatedMovieDetails = [...movieDetails];
+              //   updatedMovieDetails[id] = updatedMovie;
+              //   setMoviedetails(updatedMovieDetails);
+              //   setOpen(true);
+              //   history.push("/movies");
+              // }}
             >
               Update Movie
             </Button>
@@ -114,7 +158,7 @@ export function EditMovies({ movieDetails, setMoviedetails }) {
               onClose={() => setOpen(false)}
             />
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

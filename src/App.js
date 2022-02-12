@@ -195,10 +195,7 @@ export default function App() {
             </Route>
 
             <Route path="/edit-movies/:id">
-              <EditMovies
-                movieDetails={movieDetails}
-                setMoviedetails={setMoviedetails}
-              />
+              <EditMovies />
             </Route>
 
             <Route path="**">

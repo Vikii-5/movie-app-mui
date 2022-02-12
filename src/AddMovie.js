@@ -1,125 +1,180 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { Button, TextField, Snackbar } from "@mui/material";
+import { useFormik } from "formik";
+import * as yup from "yup";
+
+export const formValidationSchema = yup.object({
+  poster: yup
+    .string()
+    .min(4, "Poster link must be minimum 4 characters long")
+    .required("Poster link is required"),
+  trailer: yup
+    .string()
+    .min(4, "Trailer link must be minimum 4 characters long")
+    .required("Trailer link is required"),
+  name: yup.string().required("Movie name is required"),
+  rating: yup
+    .number("Please enter a rating between 0 and 10")
+    .min(0, "Rating must be at least 0")
+    .max(10, "Rating must be at most 10")
+    .required("Rating is required"),
+  year: yup
+    .number("Please enter a movie released year")
+    .min(1950, "Year must be from 1950")
+    .max(2050, "Year must be before 2050")
+    .required("Movie released is required"),  
+  storyline: yup
+    .string()
+    .min(20, "Summary must be at least 20 characters long")
+    .required("Summary is required"),
+  
+});
 
 export function AddMovie() {
-
   const history = useHistory();
-  const [movieDetails, setMoviedetails] = useState([]);
-
-  const [poster, setPoster] = useState("");
-  const [name, setName] = useState("");
-  const [rating, setRating] = useState("");
-  const [year, setYear] = useState("");
-  const [storyline, setStoryline] = useState("");
-  const [trailer, setTrailer] = useState("");
   const [open, setOpen] = useState(false);
 
-  const newMovie = { poster, name, rating, year, storyline, trailer };
-
-  const addMovie = () => {
-    fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(newMovie)
-    })
-    .then(() => console.log(newMovie))
-  }
+  const { handleSubmit, handleBlur, handleChange, values, errors, touched } =
+    useFormik({
+      initialValues: {
+        poster: "",
+        trailer: "",
+        name: "",
+        rating: "",
+        year: "",
+        storyline: "",
+      },
+      validationSchema: formValidationSchema,
+      onSubmit: (newMovie) => {
+        console.log("onSubmit", newMovie);
+        fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newMovie),
+        }).then(() => {
+          history.push("/movies");
+        });
+      },
+    });
 
   return (
     <section className="add-movie">
       <div className="input-container">
-        <div className="movie-inputs">
-          <TextField
-            id="outlined-basic"
-            label="Paste Movie Poster Link"
-            variant="outlined"
-            size="small"
-            type="url"
-            value={poster}
-            onChange={(event) => setPoster(event.target.value)}
-          />
-
-          <TextField
-            id="outlined-basic"
-            label="Paste Movie Trailer Link"
-            variant="outlined"
-            size="small"
-            type="url"
-            value={trailer}
-            onChange={(event) => setTrailer(event.target.value)}
-          />
-
-          <TextField
-            id="outlined-basic"
-            label="Enter a Movie Name"
-            variant="outlined"
-            size="small"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-
-          <TextField
-            id="outlined-basic"
-            label="Enter a Movie Rating"
-            variant="outlined"
-            size="small"
-            type="number"
-            value={rating}
-            onChange={(event) => setRating(event.target.value)}
-            min="1"
-            max="10"
-          />
-
-          <TextField
-            id="outlined-basic"
-            label="Enter a Movie Year"
-            variant="outlined"
-            size="small"
-            type="number"
-            value={year}
-            onChange={(event) => setYear(event.target.value)}
-            min="1950"
-            max="2030"
-          />
-
-          <TextField
-            id="outlined-basic"
-            label="Enter a Movie Storyline"
-            variant="outlined"
-            size="small"
-            type="text"
-            value={storyline}
-            onChange={(event) => setStoryline(event.target.value)}
-            maxLength="150"
-          />
-
-          <div className="add-button">
-            <Button
+        <form onSubmit={handleSubmit} className="movie-inputs">
+          
+            <TextField
+              id="poster"
+              name="poster"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.poster}
+              label="Paste Poster Link"
               variant="outlined"
-              onClick={() => {addMovie(); setOpen(true); history.push("/movies")}}
-              // {() => {
-              //   setMoviedetails([
-              //     ...movieDetails,
-              //     { poster, name, rating, year, storyline },
-              //   ]);
-              //   setOpen(true);
-              //   history.push("/movies");
-              // }}
-            >
-              Add Movie
-            </Button>
-
-            <Snackbar
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-              open={open}
-              autoHideDuration={1000}
-              message="Movie Added Successfully"
-              onClose={() => setOpen(false)}
+              error={errors.poster && touched.poster}
+              helperText={errors.poster && touched.poster ? errors.poster : ""}
             />
-          </div>
-        </div>
+
+            <TextField
+              id="trailer"
+              name="trailer"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.trailer}
+              label="Movie Trailer"
+              variant="outlined"
+              error={errors.trailer && touched.trailer}
+              helperText={
+                errors.trailer && touched.trailer ? errors.trailer : ""
+              }
+              poster
+            />
+
+            <TextField
+              id="name"
+              name="name"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.name}
+              label="Movie Name"
+              variant="outlined"
+              error={errors.name && touched.name}
+              helperText={errors.name && touched.name ? errors.name : ""}
+            />
+
+            <TextField
+              id="rating"
+              name="rating"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.rating}
+              label="Movie Rating"
+              variant="outlined"
+              error={errors.rating && touched.rating}
+              helperText={errors.rating && touched.rating ? errors.rating : ""}
+            />
+
+            <TextField
+              id="year"
+              name="year"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.year}
+              label="Movie Released Year"
+              variant="outlined"
+              error={errors.year && touched.year}
+              helperText={errors.year && touched.year ? errors.year : ""}
+            />
+
+            <TextField
+              id="storyline"
+              name="storyline"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.storyline}
+              label="Movie storyline"
+              variant="outlined"
+              error={errors.storyline && touched.storyline}
+              helperText={
+                errors.storyline && touched.storyline ? errors.storyline : ""
+              }
+            />
+
+            <div className="add-button">
+              <Button
+                variant="outlined"
+                type="submit"
+                // onClick={() => {
+                  
+                //   fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
+                //     method: "POST",
+                //     headers: { "Content-Type": "application/json" },
+                //     body: JSON.stringify(newMovie),
+                //   }).then(() => {
+                //     history.push("/movies");
+                //   });
+                // }}
+                // {() => {
+                //   setMoviedetails([
+                //     ...movieDetails,
+                //     { poster, name, rating, year, storyline },
+                //   ]);
+                //   setOpen(true);
+                //   history.push("/movies");
+                // }}
+              >
+                Add Movie
+              </Button>
+
+              <Snackbar
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={open}
+                autoHideDuration={1000}
+                message="Movie Added Successfully"
+                onClose={() => setOpen(false)}
+              />
+            </div>
+          </form>
       </div>
     </section>
   );

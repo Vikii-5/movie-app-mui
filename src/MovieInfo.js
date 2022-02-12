@@ -9,13 +9,15 @@ export function MovieInfo() {
   const history = useHistory();
   
   const { id } = useParams();
-  const [movieDetails, setMoviedetails] = useState([]);
+  const [movie, setMovie] = useState({});
 
-  useEffect(() => {
+  const getMovie = () => {
     fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + id, {method:"GET"})
     .then(data => data.json())
-    .then(movie => setMoviedetails(movie))
-  }, [id]);
+    .then(movie => setMovie(movie))
+  }
+
+  useEffect(getMovie, []);
 
   return (
     <section className="movie-info">
@@ -24,7 +26,7 @@ export function MovieInfo() {
         <iframe
           width="100%"
           height="480"
-          src={movieDetails.trailer}
+          src={movie.trailer}
           title="YouTube video player"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -33,10 +35,10 @@ export function MovieInfo() {
 
         <div className="movie-info-container">
           <div className="movie-specs">
-            <h2>{movieDetails.name}</h2>
-            <h4> ⭐ {movieDetails.rating}</h4>
+            <h2>{movie.name}</h2>
+            <h4> ⭐ {movie.rating}</h4>
           </div>
-          <p> {movieDetails.storyline}</p>
+          <p> {movie.storyline}</p>
         </div>
 
         <Button onClick={() => history.goBack()} variant="outlined" startIcon={<ArrowBackIosIcon />}>
