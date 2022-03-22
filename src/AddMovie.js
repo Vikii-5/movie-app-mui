@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Button, TextField, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { API } from "./global";
 
 export const formValidationSchema = yup.object({
   poster: yup
@@ -48,7 +49,7 @@ export function AddMovie() {
       validationSchema: formValidationSchema,
       onSubmit: (newMovie) => {
         console.log("onSubmit", newMovie);
-        fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
+        fetch(`${API}/movie`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newMovie),
@@ -146,7 +147,7 @@ export function AddMovie() {
                 type="submit"
                 // onClick={() => {
                   
-                //   fetch("https://6197229daf46280017e7e453.mockapi.io/movie", {
+                //   fetch(`${API}/movie`, {
                 //     method: "POST",
                 //     headers: { "Content-Type": "application/json" },
                 //     body: JSON.stringify(newMovie),

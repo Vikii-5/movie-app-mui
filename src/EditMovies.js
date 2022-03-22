@@ -4,6 +4,7 @@ import { Button } from "@mui/material";
 import { TextField, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import { formValidationSchema } from "./AddMovie";
+import { API } from "./global";
 
 export function EditMovies() {
   //Getting the id details from the url using useParams hook
@@ -11,7 +12,7 @@ export function EditMovies() {
   const [movie, setMovie] = useState(null);
 
   const getMovie = () => {
-    fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + id, {
+    fetch(`${API}/movie` + id, {
       method: "GET",
     })
       .then((data) => data.json())
@@ -32,7 +33,7 @@ function EditMovieForm({ movie }) {
       validationSchema: formValidationSchema,
       onSubmit: (updatedMovie) => {
         console.log("onSubmit", updatedMovie);
-        fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + movie.id, {
+        fetch(`${API}/movie/` + movie.id, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedMovie),
@@ -130,7 +131,7 @@ function EditMovieForm({ movie }) {
               type="submit"
               // onClick={() => {
               //   const updatedMovie = { poster, name, rating, year, storyline, trailer };
-              //   fetch("https://6197229daf46280017e7e453.mockapi.io/movie/" + movie.id, {
+              //   fetch(`${API}/movie` + movie.id, {
               //   method: "PUT",
               //   headers: {"Content-Type": "application/json"},
               //   body: JSON.stringify(updatedMovie)
